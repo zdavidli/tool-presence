@@ -1,6 +1,10 @@
 # Data Sources
 data/
 tutorial/
+samples/
+
+# Weights
+*.torch
 
 
 # Byte-compiled / optimized / DLL files
