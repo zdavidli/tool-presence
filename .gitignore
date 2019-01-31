@@ -2,6 +2,8 @@
 data/
 tutorial/
 samples/
+mnist_data/
+
 
 # Weights
 *.torch
