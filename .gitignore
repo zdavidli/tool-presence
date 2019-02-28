@@ -4,6 +4,7 @@ tutorial/
 samples/
 mnist_data/
 
+*png
 
 # Weights
 *.torch
