@@ -21,6 +21,7 @@ class VAE(nn.Module):
         self.pool1 = nn.MaxPool2d(2)
         
         # Latent vectors
+        print(image_size * image_size * conv_channels[1])
         self.fc1 = nn.Linear(image_size * image_size * conv_channels[1], h_dim1)
         self.fc2 = nn.Linear(h_dim1, h_dim2)
         self.fc31 = nn.Linear(h_dim2, zdim)
