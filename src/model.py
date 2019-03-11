@@ -21,8 +21,7 @@ class VAE(nn.Module):
         self.pool1 = nn.MaxPool2d(2)
         
         # Latent vectors
-        print(image_size * image_size * conv_channels[1])
-        self.fc1 = nn.Linear(image_size * image_size * conv_channels[1], h_dim1)
+        self.fc1 = nn.Linear(image_size//2 * image_size//2 * conv_channels[1], h_dim1)
         self.fc2 = nn.Linear(h_dim1, h_dim2)
         self.fc31 = nn.Linear(h_dim2, zdim)
         self.fc32 = nn.Linear(h_dim2, zdim)
@@ -30,7 +29,7 @@ class VAE(nn.Module):
         # Decoder
         self.fc3 = nn.Linear(zdim, h_dim2)
         self.fc4 = nn.Linear(h_dim2, h_dim1)
-        self.fc5 = nn.Linear(h_dim1, image_size * image_size * conv_channels[1])
+        self.fc5 = nn.Linear(h_dim1, image_size//2 * image_size//2 * conv_channels[1])
         
         self.conv3 = nn.ConvTranspose2d(conv_channels[1], conv_channels[0], kernel_size=3, stride=1, padding=1, bias=False)
         self.conv4 = nn.ConvTranspose2d(conv_channels[0], image_channels, kernel_size=3, stride=1, padding=1, bias=False)
@@ -44,7 +43,7 @@ class VAE(nn.Module):
         x = F.relu(self.conv1(x))
         x = self.conv2(x)
         x = F.dropout(self.pool1(x))
-        x = x.view(-1, self.image_size * self.image_size * self.conv_channels[-1])
+        x = x.view(-1, self.image_size//2 * self.image_size//2 * self.conv_channels[-1])
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
         return self.fc31(x), self.fc32(x)
@@ -53,7 +52,7 @@ class VAE(nn.Module):
         z = F.relu(self.fc3(z))
         z = F.relu(self.fc4(z))
         z = F.relu(self.fc5(z))
-        z = z.view(-1, self.conv_channels[-1], self.image_size, self.image_size)
+        z = z.view(-1, self.conv_channels[-1], self.image_size//2, self.image_size//2)
         z = F.interpolate(z, scale_factor=2)       
         z = F.relu(self.conv3(z))
         z = torch.sigmoid(self.conv4(z))

@@ -1,7 +1,7 @@
 import torch
 
 image_channels = 3
-image_size = 32
+image_size = 64
 
 batch_size = 32
 epochs = 100
