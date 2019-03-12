@@ -2,7 +2,7 @@ from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 import numpy as np
 
 
-def imscatter(x, y, ax, data, zoom, indices):
+def imscatter(x, y, ax, data, zoom):
     """
     x, y : Dataframe columns of x, y coordinates
     ax: matplotlib axes object
@@ -11,9 +11,9 @@ def imscatter(x, y, ax, data, zoom, indices):
     indices: indices of Dataset
     """
     images = []
-    for i in range(len(indices)):
+    for i in range(len(data)):
         x0, y0 = x[i], y[i]
-        img = data[indices[i]][0]
+        img = data[i][0]
         img = img.numpy().transpose(1,2,0)
         image = OffsetImage(img, zoom=zoom)
         ab = AnnotationBbox(image, (x0, y0), xycoords='data', frameon=False)
