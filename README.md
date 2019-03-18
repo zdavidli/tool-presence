@@ -8,4 +8,8 @@ Or, download from <https://drive.google.com/open?id=10C7rGokT1df5oFYy2GNL5wmXI9C
 
 ## Demo
 
-Demo notebook: <https://zdavidli.github.io/tool-presence/vae_demo.html>
+Demo notebook: <https://zdavidli.github.io/tool-presence/vae-demo.html>
+
+## Interpolation Experiments
+
+Notebook: <https://zdavidli.github.io/tool-presence/interpolation_experiments.html>
