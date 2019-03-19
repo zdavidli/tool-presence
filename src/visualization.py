@@ -43,6 +43,30 @@ def latent_interpolation(start, end, model, num_samples=10):
         
     return images
 
+def latent_interpolation_by_dimension(start, end, model, zdim, num_samples=10):
+    """
+    start: starting image
+    end: ending image
+    model: VAE with decode() method
+    """
+    latent_start = model.sampling(*model.encode(start.unsqueeze(0).to(c.device)))
+    latent_end = model.sampling(*model.encode(end.unsqueeze(0).to(c.device)))
+    alphas = np.linspace(0,1,num_samples)
+    images = []
+
+    for dim in range(10):
+        tmp = latent_start.clone()
+        dimension = []
+        for alpha in alphas:
+            tmp[:,dim] = latent_start[:, dim] * (1-alpha) + latent_end[:, dim] * alpha
+            result = model.decode(tmp)
+            result = result.cpu().detach().numpy().squeeze().transpose(1,2,0)
+            dimension.append(result)
+        images.append(dimension)
+        latent_start[:,dim]= latent_end[:, dim]
+        
+    return images
+
 def plot_pca(n, dataframe):
     """
     n: number of pca-components
