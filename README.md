@@ -5,7 +5,7 @@ Source: <https://github.com/zdavidli/tool-presence>
 
 ## Data download
 
-<www.cs.jhu.edu/~dli44/data.zip>
+www.cs.jhu.edu/~dli44/data.zip
 
 ## Demo
 
