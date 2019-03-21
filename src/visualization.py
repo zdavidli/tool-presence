@@ -45,7 +45,7 @@ def plot_latent_space(model, zdim=2, dimensions=[0,1], resolution=15):
     result[:sampled.shape[0], dimensions[0]] = sampled[:,0]
     result[:sampled.shape[0], dimensions[1]] = sampled[:,1]
    
-    x_decoded = model.decode(torch.from_numpy(result)).float()
+    x_decoded = model.decode(from_numpy(result)).float()
     x_decoded = x_decoded.reshape(resolution, resolution, 3, c.image_size, c.image_size)
     return x_decoded
 
