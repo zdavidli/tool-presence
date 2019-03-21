@@ -5,6 +5,7 @@ from matplotlib.lines import Line2D
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 import numpy as np
 from scipy.stats import norm
+from torch import from_numpy
 
 
 def imscatter(x, y, ax, data, zoom):
