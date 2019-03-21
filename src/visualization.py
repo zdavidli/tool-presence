@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 import numpy as np
+from scipy.stats import norm
 
 
 def imscatter(x, y, ax, data, zoom):
@@ -26,14 +27,36 @@ def imscatter(x, y, ax, data, zoom):
     ax.update_datalim(np.column_stack([x, y]))
     ax.autoscale()
     
+def get_latent_vector(image, model):
+    """
+    model: VAE with sampling and encode methods
+    """
+    return model.sampling(*model.encode(image.unsqueeze(0).to(c.device)))
+
+def plot_latent_space(model, zdim=2, dimensions=[0,1], resolution=15):
+ 
+    u_grid = np.dstack(np.meshgrid(np.linspace(0.05, 0.95, resolution),
+                                   np.linspace(0.05, 0.95, resolution)))
+    z_grid = norm.ppf(u_grid)
+
+    sampled = z_grid.reshape(resolution*resolution, 2)
+    result = np.zeros((resolution*resolution, zdim))
+    result[:sampled.shape[0], dimensions[0]] = sampled[:,0]
+    result[:sampled.shape[0], dimensions[1]] = sampled[:,1]
+   
+    x_decoded = model.decode(torch.from_numpy(result)).float()
+    x_decoded = x_decoded.reshape(resolution, resolution, 3, c.image_size, c.image_size)
+    return x_decoded
+
+
 def latent_interpolation(start, end, model, num_samples=10):
     """
     start: starting image
     end: ending image
     model: VAE with decode() method
     """
-    latent_start = model.sampling(*model.encode(start.unsqueeze(0).to(c.device)))
-    latent_end = model.sampling(*model.encode(end.unsqueeze(0).to(c.device)))
+    latent_start = get_latent_vector(start, model)
+    latent_end = get_latent_vector(end, model)
     alphas = np.linspace(0,1,num_samples)
     images = []
     for i in range(num_samples):
@@ -49,8 +72,8 @@ def latent_interpolation_by_dimension(start, end, model, zdim, num_samples=10):
     end: ending image
     model: VAE with decode() method
     """
-    latent_start = model.sampling(*model.encode(start.unsqueeze(0).to(c.device)))
-    latent_end = model.sampling(*model.encode(end.unsqueeze(0).to(c.device)))
+    latent_start = get_latent_vector(start, model)
+    latent_end = get_latent_vector(end, model)
     alphas = np.linspace(0,1,num_samples)
     images = []
 
