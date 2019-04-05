@@ -75,7 +75,7 @@ nbstripout=0.3.3=py_0
 ncurses=6.1=he6710b0_1
 networkx=2.2=py_1
 ninja=1.8.2=py36h6bb024c_1
-notebook=5.7.4=py36_0
+notebook=5.7.8
 notify-run=0.0.11=pypi_0
 numpy=1.15.4=py36h7e9f1db_0
 numpy-base=1.15.4=py36hde5b4d6_0
