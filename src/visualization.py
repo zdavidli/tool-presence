@@ -91,7 +91,7 @@ def latent_interpolation_by_dimension(start, end, model, zdim, num_samples=10):
         
     return images
 
-def plot_interpolation(images):
+def plot_interpolation(images, title=''):
     """
     images: images to display
     """
@@ -99,7 +99,7 @@ def plot_interpolation(images):
     widths = [1 for _ in range(n)]
     widths[0] = 1.25
     widths[-1] = 1.25
-
+    
     fig, ax = plt.subplots(1, n, 
                            figsize=(10,2),
                            frameon=False,
@@ -109,6 +109,7 @@ def plot_interpolation(images):
         ax[i].axis('off')
     ax[0].set_title("Start")
     ax[-1].set_title("End")
+    fig.suptitle(title)
     return fig
     
 
