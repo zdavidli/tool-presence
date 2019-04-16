@@ -1,5 +1,6 @@
-import torch
 import os
+
+import torch
 
 # Training arguments
 image_channels = 3
