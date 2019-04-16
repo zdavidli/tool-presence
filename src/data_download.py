@@ -9,15 +9,17 @@ output_dir = 'surgical_video_frames'
 
 if not os.path.exists(os.path.join(data_root, video_dir)):
     os.makedirs(os.path.join(data_root, video_dir))
-    
+
 if not os.path.exists(os.path.join(data_root, output_dir)):
     os.makedirs(os.path.join(data_root, output_dir))
-    
-filename = YouTube(video_url).streams.first().download(os.path.join(data_root, video_dir))
+
+filename = YouTube(video_url).streams.first().download(
+    os.path.join(data_root, video_dir))
 vid = imageio.get_reader(filename,  'ffmpeg')
 
 for frame in range(340, 1916):
-    #Manual start and end points of video
-    
+    # Manual start and end points of video
+
     image = vid.get_data(frame)
-    imageio.imwrite("{0}/frame_{1:04d}.png".format(output_dir, int(frame)-340), image)
+    imageio.imwrite(
+        "{0}/frame_{1:04d}.png".format(output_dir, int(frame)-340), image)
