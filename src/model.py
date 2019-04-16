@@ -78,7 +78,7 @@ class VAE(nn.Module):
         return self.decode(z), mu, log_var
 
 
-def loss_function(recon_x, x, mu, log_var, input_size=1, zdim=1, beta=1):
+def vae_loss(recon_x, x, mu, log_var, input_size=1, zdim=1, beta=1):
     RL = F.binary_cross_entropy(recon_x, x, reduction='sum')/input_size
     KLD = -0.5 * torch.sum(1 + log_var - mu.pow(2) - log_var.exp())/zdim
     loss = RL + KLD * beta

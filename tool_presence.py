@@ -41,11 +41,11 @@ def main(args):
                 data = data.to(c.device)
                 optimizer.zero_grad()
                 recon_batch, mu, logvar = model(data)
-                loss, r, k = m.loss_function(recon_batch,
-                                             data,
-                                             mu,
-                                             logvar,
-                                             **loss_params)
+                loss, r, k = m.vae_loss(recon_batch,
+                                        data,
+                                        mu,
+                                        logvar,
+                                        **loss_params)
                 loss.backward()
 
                 train_loss += loss.item()
@@ -76,7 +76,7 @@ def main(args):
                     data, _ = next(it)
                     data = data.to(c.device)
                     recon_batch, mu, logvar = model(data)
-                    loss, r, k = m.loss_function(
+                    loss, r, k = m.vae_loss(
                         recon_batch, data, mu, logvar, **loss_params)
                     n = min(data.size(0), 8)
                     comparison = torch.cat([data[:n],
