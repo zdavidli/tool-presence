@@ -8,6 +8,7 @@ from src import constants as c
 from src import utils
 from src import visualization as v
 from src import model as m
+from torch.autograd import Variable
 from torchvision.utils import save_image
 from tqdm import tqdm, trange
 
@@ -40,12 +41,12 @@ def main(args):
             for batch_idx, (data, _) in enumerate(t2):
                 data = data.to(c.device)
                 optimizer.zero_grad()
-                recon_batch, mu, logvar = model(data)
-                loss, r, k = m.vae_loss(recon_batch,
-                                        data,
-                                        mu,
-                                        logvar,
-                                        **loss_params)
+                recon_batch, z, mu, logvar = model(data)
+                loss, r, k = args.loss_function(recon_batch,
+                                                data,
+                                                mu,
+                                                logvar,
+                                                **loss_params)
                 loss.backward()
 
                 train_loss += loss.item()
@@ -75,9 +76,12 @@ def main(args):
                     it = iter(dataloaders['val'])
                     data, _ = next(it)
                     data = data.to(c.device)
-                    recon_batch, mu, logvar = model(data)
-                    loss, r, k = m.vae_loss(
-                        recon_batch, data, mu, logvar, **loss_params)
+                    recon_batch, z, mu, logvar = model(data)
+                    loss, r, k = args.loss_function(recon_batch,
+                                                    data,
+                                                    mu,
+                                                    logvar,
+                                                    **loss_params)
                     n = min(data.size(0), 8)
                     comparison = torch.cat([data[:n],
                                             recon_batch.view(args.batch_size,
@@ -115,6 +119,6 @@ args = parser.parse_args()
 #                           '--sample-model-interval=1'])
 args.data_dir = os.path.abspath(args.data_dir)
 os.makedirs(args.output_dir, exist_ok=True)
-
+args.loss_function = utils.select_loss_function(args.loss_function)
 # pass args to main
 main(args)

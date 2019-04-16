@@ -2,6 +2,7 @@ import argparse
 import os
 
 import src.constants as c
+import src.model as m
 import torch
 from torchvision import datasets, transforms
 
@@ -58,7 +59,18 @@ def setup_argparse():
                         type=int, default=10, help=' ')
     parser.add_argument('--betas', type=str,
                         default='5,20', help='beta values delimited by ,')
+    parser.add_argument('--loss-function', choices=['mmd', 'vae'],
+                        default='vae', help='Loss function choice')
     return parser
+
+
+def select_loss_function(choice):
+    if choice == 'mmd':
+        return m.mmd_loss
+    elif choice == 'vae':
+        return m.vae_loss
+    else:
+        raise ValueError("Unrecognized loss function")
 
 
 def setup_data(args):

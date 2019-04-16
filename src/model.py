@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from torch.autograd import Variable
+
 import numpy as np
 
 
@@ -75,11 +77,45 @@ class VAE(nn.Module):
     def forward(self, x):
         mu, log_var = self.encode(x)
         z = self.sampling(mu, log_var)
-        return self.decode(z), mu, log_var
+        return self.decode(z), z, mu, log_var
 
 
 def vae_loss(recon_x, x, mu, log_var, input_size=1, zdim=1, beta=1):
+    """
+    Standard ELBO loss with beta=1
+    With beta != 1, loss function of beta-VAE
+    """
     RL = F.binary_cross_entropy(recon_x, x, reduction='sum')/input_size
     KLD = -0.5 * torch.sum(1 + log_var - mu.pow(2) - log_var.exp())/zdim
     loss = RL + KLD * beta
     return loss, RL, KLD
+
+
+def compute_kernel(x, y):
+    x_size = x.size(0)
+    y_size = y.size(0)
+    dim = x.size(1)
+    x = x.unsqueeze(1)  # (x_size, 1, dim)
+    y = y.unsqueeze(0)  # (1, y_size, dim)
+    tiled_x = x.expand(x_size, y_size, dim)
+    tiled_y = y.expand(x_size, y_size, dim)
+    kernel_input = (tiled_x - tiled_y).pow(2).mean(2)/float(dim)
+    return torch.exp(-kernel_input)  # (x_size, y_size)
+
+
+def compute_mmd(x, y):
+    x_kernel = compute_kernel(x, x)
+    y_kernel = compute_kernel(y, y)
+    xy_kernel = compute_kernel(x, y)
+    mmd = x_kernel.mean() + y_kernel.mean() - 2*xy_kernel.mean()
+    return mmd
+
+
+def mmd_loss(recon_x, x, z, batch_size, zdim):
+    """
+    Compute mmd+nll loss for mmd-vae
+    """
+    true_samples = Variable(torch.randn(200, zdim), requires_grad=False)
+    mmd = compute_mmd(true_samples, z)
+    nll = (recon_x - x).pow(2).mean()
+    return mmd + nll, mmd, nll
