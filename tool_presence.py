@@ -106,12 +106,13 @@ def main(args):
 
 # set up argparse
 parser = utils.setup_argparse()
-args = parser.parse_args(['--data-dir=./data/surgical_data/',
-                          '--output-dir=./data/beta_vae/2fc',
-                          '--epochs=1',
-                          '--image-size=16',
-                          '--betas=2,5',
-                          '--sample-model-interval=1'])
+args = parser.parse_args()
+# args = parser.parse_args(['--data-dir=./data/surgical_data/',
+#                           '--output-dir=./data/beta_vae/2fc',
+#                           '--epochs=1',
+#                           '--image-size=16',
+#                           '--betas=2,5',
+#                           '--sample-model-interval=1'])
 args.data_dir = os.path.abspath(args.data_dir)
 os.makedirs(args.output_dir, exist_ok=True)
 
