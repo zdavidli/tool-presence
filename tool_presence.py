@@ -26,7 +26,8 @@ def main(args):
                       zdim=args.z_dim).to(c.device)
 
         optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
-        loss_params = {'input_size': args.image_size,
+        loss_params = {'batch_size': args.batch_size,
+                       'input_size': args.image_size,
                        'zdim': args.z_dim,
                        'beta': beta}
 
@@ -121,4 +122,26 @@ args.data_dir = os.path.abspath(args.data_dir)
 os.makedirs(args.output_dir, exist_ok=True)
 args.loss_function = utils.select_loss_function(args.loss_function)
 # pass args to main
-main(args)
+# main(args)
+
+model = m.VAE(image_channels=args.image_channels,
+              image_size=args.image_size,
+              h_dim1=1024,
+              h_dim2=128,
+              zdim=args.z_dim).to(c.device)
+
+
+a = Variable(torch.randn(1, 3, args.image_size, args.image_size))
+recon, z, mu, logvar = model(a)
+
+loss_params = {'recon': recon,
+               'x': a,
+               'z': z
+               'mu': mu
+               'logvar': logvar
+               'batch_size': args.batch_size,
+               'input_size': args.image_size,
+               'zdim': args.z_dim,
+               'beta': 5}
+
+print(args.loss_function(recon, a, z, mu, logvar, **loss_params))

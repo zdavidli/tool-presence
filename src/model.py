@@ -80,17 +80,6 @@ class VAE(nn.Module):
         return self.decode(z), z, mu, log_var
 
 
-def vae_loss(recon_x, x, mu, log_var, input_size=1, zdim=1, beta=1):
-    """
-    Standard ELBO loss with beta=1
-    With beta != 1, loss function of beta-VAE
-    """
-    RL = F.binary_cross_entropy(recon_x, x, reduction='sum')/input_size
-    KLD = -0.5 * torch.sum(1 + log_var - mu.pow(2) - log_var.exp())/zdim
-    loss = RL + KLD * beta
-    return loss, RL, KLD
-
-
 def compute_kernel(x, y):
     x_size = x.size(0)
     y_size = y.size(0)
@@ -111,11 +100,31 @@ def compute_mmd(x, y):
     return mmd
 
 
-def mmd_loss(recon_x, x, z, batch_size, zdim):
+def mmd_loss(recon_x, x, z, mu, log_var, **kwargs):
     """
     Compute mmd+nll loss for mmd-vae
+
+    Note: mu, logvar unused. Included so that I can
+        call mmd/vae with same arguments
+    TODO: Refactor
     """
-    true_samples = Variable(torch.randn(200, zdim), requires_grad=False)
+    true_samples = Variable(torch.randn(
+        200, kwargs['zdim']), requires_grad=False)
     mmd = compute_mmd(true_samples, z)
     nll = (recon_x - x).pow(2).mean()
     return mmd + nll, mmd, nll
+
+
+def vae_loss(recon_x, x, z, mu, log_var, **kwargs):
+    """
+    Standard ELBO loss with beta=1
+    With beta != 1, loss function of beta-VAE
+
+    Note: z unused but included so parameters are consistent. TODO: Refactor
+    """
+    RL = F.binary_cross_entropy(
+        recon_x, x, reduction='sum')/kwargs['input_size']
+    KLD = -0.5 * torch.sum(1 + log_var - mu.pow(2) -
+                           log_var.exp())/kwargs['zdim']
+    loss = RL + KLD * kwargs['beta']
+    return loss, RL, KLD
