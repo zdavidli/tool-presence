@@ -26,10 +26,6 @@ def main(args):
                       zdim=args.z_dim).to(c.device)
 
         optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
-        loss_params = {'batch_size': args.batch_size,
-                       'input_size': args.image_size,
-                       'zdim': args.z_dim,
-                       'beta': beta}
 
         tbar = trange(args.epochs)
         for epoch in tbar:
@@ -43,11 +39,18 @@ def main(args):
                 data = data.to(c.device)
                 optimizer.zero_grad()
                 recon_batch, z, mu, logvar = model(data)
-                loss, r, k = args.loss_function(recon_batch,
-                                                data,
-                                                mu,
-                                                logvar,
-                                                **loss_params)
+
+                loss_params = {'recon': recon_batch,
+                               'x': data,
+                               'z': z,
+                               'mu': mu,
+                               'logvar': logvar,
+                               'batch_size': args.batch_size,
+                               'input_size': args.image_size,
+                               'zdim': args.z_dim,
+                               'beta': 5}
+
+                loss, r, k = args.loss_function(**loss_params)
                 loss.backward()
 
                 train_loss += loss.item()
@@ -78,11 +81,16 @@ def main(args):
                     data, _ = next(it)
                     data = data.to(c.device)
                     recon_batch, z, mu, logvar = model(data)
-                    loss, r, k = args.loss_function(recon_batch,
-                                                    data,
-                                                    mu,
-                                                    logvar,
-                                                    **loss_params)
+                    loss_params = {'recon': recon_batch,
+                                   'x': data,
+                                   'z': z,
+                                   'mu': mu,
+                                   'logvar': logvar,
+                                   'batch_size': args.batch_size,
+                                   'input_size': args.image_size,
+                                   'zdim': args.z_dim,
+                                   'beta': 5}
+                    loss, r, k = args.loss_function(**loss_params)
                     n = min(data.size(0), 8)
                     comparison = torch.cat([data[:n],
                                             recon_batch.view(args.batch_size,
@@ -122,26 +130,4 @@ args.data_dir = os.path.abspath(args.data_dir)
 os.makedirs(args.output_dir, exist_ok=True)
 args.loss_function = utils.select_loss_function(args.loss_function)
 # pass args to main
-# main(args)
-
-model = m.VAE(image_channels=args.image_channels,
-              image_size=args.image_size,
-              h_dim1=1024,
-              h_dim2=128,
-              zdim=args.z_dim).to(c.device)
-
-
-a = Variable(torch.randn(1, 3, args.image_size, args.image_size))
-recon, z, mu, logvar = model(a)
-
-loss_params = {'recon': recon,
-               'x': a,
-               'z': z
-               'mu': mu
-               'logvar': logvar
-               'batch_size': args.batch_size,
-               'input_size': args.image_size,
-               'zdim': args.z_dim,
-               'beta': 5}
-
-print(args.loss_function(recon, a, z, mu, logvar, **loss_params))
+main(args)

@@ -100,31 +100,25 @@ def compute_mmd(x, y):
     return mmd
 
 
-def mmd_loss(recon_x, x, z, mu, log_var, **kwargs):
+def mmd_loss(**kwargs):
     """
     Compute mmd+nll loss for mmd-vae
-
-    Note: mu, logvar unused. Included so that I can
-        call mmd/vae with same arguments
-    TODO: Refactor
     """
     true_samples = Variable(torch.randn(
         200, kwargs['zdim']), requires_grad=False)
-    mmd = compute_mmd(true_samples, z)
-    nll = (recon_x - x).pow(2).mean()
+    mmd = compute_mmd(true_samples, kwargs['z'])
+    nll = (kwargs['recon'] - kwargs['x']).pow(2).mean()
     return mmd + nll, mmd, nll
 
 
-def vae_loss(recon_x, x, z, mu, log_var, **kwargs):
+def vae_loss(**kwargs):
     """
     Standard ELBO loss with beta=1
     With beta != 1, loss function of beta-VAE
-
-    Note: z unused but included so parameters are consistent. TODO: Refactor
     """
     RL = F.binary_cross_entropy(
-        recon_x, x, reduction='sum')/kwargs['input_size']
-    KLD = -0.5 * torch.sum(1 + log_var - mu.pow(2) -
-                           log_var.exp())/kwargs['zdim']
+        kwargs['recon'], kwargs['x'], reduction='sum')/kwargs['input_size']
+    KLD = -0.5 * torch.sum(1 + kwargs['logvar'] - kwargs['mu'].pow(2) -
+                           kwargs['logvar'].exp())/kwargs['zdim']
     loss = RL + KLD * kwargs['beta']
     return loss, RL, KLD
