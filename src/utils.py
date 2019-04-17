@@ -89,7 +89,7 @@ def setup_data(args, augmentation=False):
         transforms.CenterCrop(args.image_size),
         transforms.ToTensor()])
 
-    data_transforms = transforms.Compose([transformations])
+    data_transforms = transforms.Compose(transformations)
 
     image_datasets = {x: datasets.ImageFolder(os.path.join(args.root,
                                                            args.data_dir,
