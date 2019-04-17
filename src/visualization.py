@@ -2,7 +2,7 @@ from itertools import combinations
 
 import matplotlib.pyplot as plt
 import numpy as np
-import src.utils
+import src.utils as utils
 from matplotlib.lines import Line2D
 from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 from scipy.stats import norm
@@ -83,7 +83,7 @@ def explore_latent_dimension(start, model, zdim, num_samples=10):
     zdim: dimension to vary
     num_samples: number of samples
     """
-    latent_start = v.get_latent_vector(start, model)
+    latent_start = get_latent_vector(start, model)
     values = np.linspace(-3, 3, num_samples)
     images = []
     for value in values:
