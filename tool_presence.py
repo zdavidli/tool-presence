@@ -136,4 +136,9 @@ if args.verbose:
           os.path.join(args.root, args.output_dir, args.output_name))
 
 # pass args to main
+<<<<<<< HEAD
 # main(args)
+=======
+main(args)
+
+>>>>>>> 0df0637e59edede43d835902a0d0507c3fb8da88
