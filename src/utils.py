@@ -2,6 +2,7 @@ import argparse
 import os
 
 import src.constants as c
+import src.model as m
 import torch
 from torchvision import datasets, transforms
 
@@ -42,7 +43,9 @@ def setup_argparse():
                         default=os.path.join(c.data_home, 'surgical_data'),
                         help=' ')
     parser.add_argument('--output-dir', type=str,
-                        default='', help=' ')
+                        default='', help='Directory to save outputs')
+    parser.add_argument('--output-name', type=str,
+                        default='', help='Filename to save outputs')
     parser.add_argument('--image-channels', type=int,
                         default=c.image_channels, help=' ')
     parser.add_argument('--image-size', type=int,
@@ -58,7 +61,20 @@ def setup_argparse():
                         type=int, default=10, help=' ')
     parser.add_argument('--betas', type=str,
                         default='5,20', help='beta values delimited by ,')
+    parser.add_argument('--loss-function', choices=['mmd', 'vae'],
+                        default='vae', help='Loss function choice')
+    parser.add_argument('-v', '--verbose', help="increase output verbosity",
+                        action="store_true")
     return parser
+
+
+def select_loss_function(choice):
+    if choice == 'mmd':
+        return m.mmd_loss
+    elif choice == 'vae':
+        return m.vae_loss
+    else:
+        raise ValueError("Unrecognized loss function")
 
 
 def setup_data(args):
