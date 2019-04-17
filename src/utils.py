@@ -86,7 +86,9 @@ def setup_data(args):
         transforms.ToTensor()
     ])
 
-    image_datasets = {x: datasets.ImageFolder(os.path.join(args.data_dir, x),
+    image_datasets = {x: datasets.ImageFolder(os.path.join(args.root,
+                                                           args.data_dir,
+                                                           x),
                                               data_transforms)
                       for x in ['train', 'val']}
     dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x],
