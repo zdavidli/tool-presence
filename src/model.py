@@ -81,6 +81,10 @@ class VAE(nn.Module):
 
 
 def compute_kernel(x, y):
+    """
+    compute_kernel and compute_mmd from
+    https://github.com/napsternxg/pytorch-practice/blob/master/Pytorch%20-%20MMD%20VAE.ipynb
+    """
     x_size = x.size(0)
     y_size = y.size(0)
     dim = x.size(1)
