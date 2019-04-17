@@ -92,7 +92,7 @@ def compute_kernel(x, y):
     y = y.unsqueeze(0)  # (1, y_size, dim)
     tiled_x = x.expand(x_size, y_size, dim)
     tiled_y = y.expand(x_size, y_size, dim)
-    kernel_input = (tiled_x - tiled_y).pow(2).mean(2)/float(dim)
+    kernel_input = (tiled_x - tiled_y).pow(2).mean(2)/dim
     return torch.exp(-kernel_input)  # (x_size, y_size)
 
 
