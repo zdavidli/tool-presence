@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 
 import numpy as np
-
+import src.constants as c
 
 class VAE(nn.Module):
     def __init__(self, image_channels, image_size, h_dim1, h_dim2,
@@ -109,7 +109,7 @@ def mmd_loss(**kwargs):
     Compute mmd+nll loss for mmd-vae
     """
     true_samples = Variable(torch.randn(
-        200, kwargs['zdim']), requires_grad=False)
+        200, kwargs['zdim']), requires_grad=False).to(c.device)
     mmd = compute_mmd(true_samples, kwargs['z'])
     nll = (kwargs['recon'] - kwargs['x']).pow(2).mean()
     return mmd + nll, mmd, nll
