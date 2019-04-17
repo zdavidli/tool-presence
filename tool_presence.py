@@ -17,7 +17,8 @@ def main(args):
     datasets, dataloaders = utils.setup_data(args)
     args.betas = [float(x) for x in args.betas.split(',')]
     for beta in tqdm(args.betas):
-        output_name = 'beta_{}_epoch_{}.{}'
+        output_name = '{}_beta_{}_epoch_{{}}.{{}}'.format(
+            args.output_name, beta)
         losses = {'kl': [], 'rl': []}
         model = m.VAE(image_channels=args.image_channels,
                       image_size=args.image_size,
@@ -103,7 +104,6 @@ def main(args):
                     save_image(comparison.cpu(),
                                os.path.join(args.output_dir,
                                             output_name.format(
-                                                beta,
                                                 epoch+1,
                                                 'png')
                                             ),
@@ -112,9 +112,9 @@ def main(args):
             if (epoch + 1) % args.save_model_interval == 0:
                 torch.save(model.state_dict(),
                            os.path.join(args.output_dir,
-                                        output_name.format(beta,
-                                                           epoch+1,
-                                                           'torch')))
+                                        output_name.format(
+                                            epoch+1,
+                                            'torch')))
 
 
 # set up argparse
@@ -129,5 +129,11 @@ args = parser.parse_args()
 args.data_dir = os.path.abspath(args.data_dir)
 os.makedirs(args.output_dir, exist_ok=True)
 args.loss_function = utils.select_loss_function(args.loss_function)
+
+if args.verbose:
+    print("Using loss function:", args.loss_function.__name__)
+    print("Saving data to:",
+          os.path.join("./", args.output_dir, args.output_name))
+
 # pass args to main
 main(args)

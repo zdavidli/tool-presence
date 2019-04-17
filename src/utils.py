@@ -43,7 +43,9 @@ def setup_argparse():
                         default=os.path.join(c.data_home, 'surgical_data'),
                         help=' ')
     parser.add_argument('--output-dir', type=str,
-                        default='', help=' ')
+                        default='', help='Directory to save outputs')
+    parser.add_argument('--output-name', type=str,
+                        default='', help='Filename to save outputs')
     parser.add_argument('--image-channels', type=int,
                         default=c.image_channels, help=' ')
     parser.add_argument('--image-size', type=int,
@@ -61,6 +63,8 @@ def setup_argparse():
                         default='5,20', help='beta values delimited by ,')
     parser.add_argument('--loss-function', choices=['mmd', 'vae'],
                         default='vae', help='Loss function choice')
+    parser.add_argument('-v', '--verbose', help="increase output verbosity",
+                        action="store_true")
     return parser
 
 
