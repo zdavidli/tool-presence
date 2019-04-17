@@ -77,14 +77,19 @@ def select_loss_function(choice):
         raise ValueError("Unrecognized loss function")
 
 
-def setup_data(args):
-    data_transforms = transforms.Compose([
-        transforms.RandomHorizontalFlip(),
-        transforms.RandomAffine(15),
+def setup_data(args, augmentation=False):
+    transformations = []
+    if augmentation:
+        transformations.extend([
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomAffine(15),])
+
+    transformations.extend([
         transforms.Resize(args.image_size),
         transforms.CenterCrop(args.image_size),
-        transforms.ToTensor()
-    ])
+        transforms.ToTensor()])
+
+    data_transforms = transforms.Compose([transformations])
 
     image_datasets = {x: datasets.ImageFolder(os.path.join(args.root,
                                                            args.data_dir,
