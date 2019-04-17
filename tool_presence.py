@@ -126,14 +126,14 @@ args = parser.parse_args()
 #                           '--image-size=16',
 #                           '--betas=2,5',
 #                           '--sample-model-interval=1'])
-args.data_dir = os.path.abspath(args.data_dir)
-os.makedirs(args.output_dir, exist_ok=True)
+args.data_dir = os.path.abspath(os.path.join(args.root, args.data_dir))
+os.makedirs(os.path.join(args.root, args.output_dir), exist_ok=True)
 args.loss_function = utils.select_loss_function(args.loss_function)
 
 if args.verbose:
     print("Using loss function:", args.loss_function.__name__)
     print("Saving data to:",
-          os.path.join("./", args.output_dir, args.output_name))
+          os.path.join(args.root, args.output_dir, args.output_name))
 
 # pass args to main
-main(args)
+# main(args)
