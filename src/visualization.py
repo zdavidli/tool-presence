@@ -83,7 +83,16 @@ def explore_latent_dimension(start, model, zdim, num_samples=10):
     zdim: dimension to vary
     num_samples: number of samples
     """
-    pass
+    latent_start = v.get_latent_vector(start, model)
+    values = np.linspace(-3, 3, num_samples)
+    images = []
+    for value in values:
+        temp = latent_start.clone()
+        temp[:, zdim] = value
+        result = utils.torch_to_image(model.decode(temp))
+        images.append(result)
+
+    return images
 
 
 def latent_interpolation_by_dimension(start, end, model, zdim, num_samples=10):
