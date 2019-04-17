@@ -1,10 +1,12 @@
-from src import constants as c
 from itertools import combinations
+
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
-from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 import numpy as np
+import src.utils
+from matplotlib.lines import Line2D
+from matplotlib.offsetbox import AnnotationBbox, OffsetImage
 from scipy.stats import norm
+from src import constants as c
 from torch import from_numpy
 
 
@@ -55,6 +57,8 @@ def plot_latent_space(model, zdim=2, dimensions=[0, 1], resolution=15):
 
 def latent_interpolation(start, end, model, num_samples=10):
     """
+    Interpolate between latent vectors and get resulting decoded images
+
     start: starting image
     end: ending image
     model: VAE with decode() method
@@ -65,7 +69,27 @@ def latent_interpolation(start, end, model, num_samples=10):
     images = []
     for i in range(num_samples):
         result = model.decode(latent_start*(1-alphas[i])+latent_end*alphas[i])
-        result = result.cpu().detach().numpy().squeeze().transpose(1, 2, 0)
+        result = utils.torch_to_image(result)
+        images.append(result)
+
+    return images
+
+
+def explore_latent_dimension(start, model, zdim, num_samples=10):
+    """
+    Given starting image, vary one latent dimension through entire range
+    start: starting image
+    model: VAE with decode() method
+    zdim: dimension to vary
+    num_samples: number of samples
+    """
+    latent_start = v.get_latent_vector(start, model)
+    values = np.linspace(-3, 3, num_samples)
+    images = []
+    for value in values:
+        temp = latent_start.clone()
+        temp[:, zdim] = value
+        result = utils.torch_to_image(model.decode(temp))
         images.append(result)
 
     return images
@@ -73,6 +97,8 @@ def latent_interpolation(start, end, model, num_samples=10):
 
 def latent_interpolation_by_dimension(start, end, model, zdim, num_samples=10):
     """
+    Interpolate between two latent vectors in each dimension separately
+
     start: starting image
     end: ending image
     model: VAE with decode() method
@@ -82,14 +108,14 @@ def latent_interpolation_by_dimension(start, end, model, zdim, num_samples=10):
     alphas = np.linspace(0, 1, num_samples)
     images = []
 
-    for dim in range(10):
+    for dim in range(zdim):
         tmp = latent_start.clone()
         dimension = []
         for alpha in alphas:
             tmp[:, dim] = latent_start[:, dim] * \
                 (1-alpha) + latent_end[:, dim] * alpha
             result = model.decode(tmp)
-            result = result.cpu().detach().numpy().squeeze().transpose(1, 2, 0)
+            result = torch_to_image(result)
             dimension.append(result)
         images.append(dimension)
         latent_start[:, dim] = latent_end[:, dim]
