@@ -21,4 +21,4 @@ kwargs = {'num_workers': 1, 'pin_memory': True} if cuda else {}
 
 # Paths
 root = '/users/dli44/tool-presence/'
-data_home = '/users/dli44/tool-presence/data/'
+data_home = os.path.join(root, 'data/')
