@@ -1,8 +1,9 @@
 # Data Sources
 data/
+cadaver_data/
 tutorial/
 samples/
-mnist_data/
+youtube_data/
 *png
 *gif
 
