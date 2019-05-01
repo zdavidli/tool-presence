@@ -40,7 +40,7 @@ def setup_argparse():
                         default=os.path.abspath('.'),
                         help='Root directory of tool-presence')
     parser.add_argument('--data-dir', type=str,
-                        default=os.path.join(c.data_home, 'surgical_data'),
+                        default=os.path.join(c.data_home, 'youtube_data'),
                         help=' ')
     parser.add_argument('--output-dir', type=str,
                         default='', help='Directory to save outputs')
