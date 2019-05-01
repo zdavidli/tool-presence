@@ -1,6 +1,7 @@
 from scipy.special import logsumexp
 from scipy.stats import norm
 import argparse
+import numpy as np
 import os
 
 import src.constants as c
@@ -114,8 +115,8 @@ def compute_samples(data, model, num_samples):
     """
 
     z_mean, z_log_sigma = model.encode(data.to(c.device))
-    z_mean, z_log_sigma = utils.torch_to_numpy(
-        z_mean), utils.torch_to_numpy(z_log_sigma)
+    z_mean, z_log_sigma = torch_to_numpy(
+        z_mean), torch_to_numpy(z_log_sigma)
     z_samples = []
     qz = []
 
@@ -138,7 +139,7 @@ def compute_samples(data, model, num_samples):
     return z_samples, pz, qz
 
 
-def estimate_logpx(dataloader, model, num_samples):
+def estimate_logpx(dataloader, model, args, num_samples):
     """
     Adapted from http://bjlkeng.github.io/posts/importance-sampling-and-estimating-marginal-likelihood-in-variational-autoencoders/
 
@@ -155,15 +156,15 @@ def estimate_logpx(dataloader, model, num_samples):
 
     result = []
     for batch_idx, (data, _) in enumerate(dataloader):
-        z_samples, pz, qz = compute_samples(data, num_samples)
+        z_samples, pz, qz = compute_samples(data, model, num_samples)
         assert z_samples.shape == pz.shape
         assert pz.shape == qz.shape
         for i in range(len(data)):
-            datum = utils.torch_to_numpy(data[i]).reshape(
+            datum = torch_to_numpy(data[i]).reshape(
                 args.image_size * args.image_size * args.image_channels)
             x_predict = model.decode(torch.from_numpy(
                 z_samples[i]).float().to(c.device))
-            x_predict = utils.torch_to_numpy(
+            x_predict = torch_to_numpy(
                 x_predict).reshape(-1, args.image_size * args.image_size * args.image_channels)
             x_predict = np.clip(x_predict, np.finfo(
                 float).eps, 1. - np.finfo(float).eps)
