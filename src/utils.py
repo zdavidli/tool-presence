@@ -114,19 +114,18 @@ def compute_samples(data, num_samples):
     """
 
     z_mean, z_log_sigma = model.encode(data.to(c.device))
-    z_mean, z_log_sigma = utils.torch_to_numpy(z_mean), utils.torch_to_numpy(z_log_sigma)
+    z_mean, z_log_sigma = utils.torch_to_numpy(
+        z_mean), utils.torch_to_numpy(z_log_sigma)
     z_samples = []
     qz = []
-
 
     for m, s in zip(z_mean, z_log_sigma):
         z_vals = [np.random.normal(m[i], np.exp(s[i]), num_samples)
                   for i in range(len(m))]
         qz_vals = [norm.pdf(z_vals[i], loc=m[i], scale=np.exp(s[i]))
-                  for i in range(len(m))]
+                   for i in range(len(m))]
         z_samples.append(z_vals)
         qz.append(qz_vals)
-
 
     z_samples = np.array(z_samples)
     pz = norm.pdf(z_samples)
@@ -160,15 +159,20 @@ def estimate_logpx(dataloader, num_samples):
         assert z_samples.shape == pz.shape
         assert pz.shape == qz.shape
         for i in range(len(data)):
-            datum = utils.torch_to_numpy(data[i]).reshape(args.image_size * args.image_size * args.image_channels)
-            x_predict = model.decode(torch.from_numpy(z_samples[i]).float().to(c.device))
-            x_predict = utils.torch_to_numpy(x_predict).reshape(-1, args.image_size * args.image_size * args.image_channels)
-            x_predict = np.clip(x_predict, np.finfo(float).eps, 1. - np.finfo(float).eps)
+            datum = utils.torch_to_numpy(data[i]).reshape(
+                args.image_size * args.image_size * args.image_channels)
+            x_predict = model.decode(torch.from_numpy(
+                z_samples[i]).float().to(c.device))
+            x_predict = utils.torch_to_numpy(
+                x_predict).reshape(-1, args.image_size * args.image_size * args.image_channels)
+            x_predict = np.clip(x_predict, np.finfo(
+                float).eps, 1. - np.finfo(float).eps)
             p_vals = pz[i]
             q_vals = qz[i]
 
             # \log p(x|z) = Binary cross entropy
-            logp_xz = np.sum(datum * np.log(x_predict) + (1. - datum) * np.log(1.0 - x_predict), axis=-1)
+            logp_xz = np.sum(datum * np.log(x_predict) +
+                             (1. - datum) * np.log(1.0 - x_predict), axis=-1)
             logpz = np.sum(np.log(p_vals), axis=-1)
             logqz = np.sum(np.log(q_vals), axis=-1)
             argsum = logp_xz + logpz - logqz
