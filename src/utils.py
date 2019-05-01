@@ -106,7 +106,7 @@ def setup_data(args, augmentation=False):
     return image_datasets, dataloaders
 
 
-def compute_samples(data, num_samples):
+def compute_samples(data, model, num_samples):
     """
     Sample from importance distribution z_samples ~ q(z|X) and
     compute p(z_samples), q(z_samples) for importance sampling
@@ -138,7 +138,7 @@ def compute_samples(data, num_samples):
     return z_samples, pz, qz
 
 
-def estimate_logpx(dataloader, num_samples):
+def estimate_logpx(dataloader, model, num_samples):
     """
     Adapted from http://bjlkeng.github.io/posts/importance-sampling-and-estimating-marginal-likelihood-in-variational-autoencoders/
 
