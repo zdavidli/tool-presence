@@ -29,6 +29,10 @@ def main(args):
                           h_dim2=128,
                           zdim=zdim).to(c.device)
 
+            if args.verbose:
+                tqdm.write(output_name)
+                tqdm.write('zdim = {}, beta = {}'.format(zdim, beta))
+
             optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 
             tbar = trange(args.epochs)
@@ -52,7 +56,7 @@ def main(args):
                                    'batch_size': args.batch_size,
                                    'input_size': args.image_size,
                                    'zdim': zdim,
-                                   'beta': args.beta}
+                                   'beta': beta}
 
                     loss, r, k = args.loss_function(**loss_params)
                     loss.backward()
@@ -93,7 +97,7 @@ def main(args):
                                        'batch_size': args.batch_size,
                                        'input_size': args.image_size,
                                        'zdim': zdim,
-                                       'beta': args.beta}
+                                       'beta': beta}
                         loss, r, k = args.loss_function(**loss_params)
                         n = min(data.size(0), 8)
                         comparison = torch.cat([data[:n],
