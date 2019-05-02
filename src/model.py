@@ -112,7 +112,8 @@ def mmd_loss(**kwargs):
         200, kwargs['zdim']), requires_grad=False).to(c.device)
     mmd = compute_mmd(true_samples, kwargs['z'])
     nll = (kwargs['recon'] - kwargs['x']).pow(2).mean()
-    return mmd + nll, mmd, nll
+    loss = nll + mmd * kwargs['beta']
+    return loss, mmd, nll
 
 
 def vae_loss(**kwargs):

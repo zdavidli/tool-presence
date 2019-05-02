@@ -54,7 +54,7 @@ def setup_argparse():
     parser.add_argument('--image-size', type=int,
                         default=c.image_size, help=' ')
     parser.add_argument('--batch-size', type=int, default=32, help=' ')
-    parser.add_argument('--z-dim', type=int, default=64, help=' ')
+    parser.add_argument('--z-dim', type=str, default=64, help=' ')
     parser.add_argument('--learning-rate', type=float,
                         default=1e-3, help=' ')
     parser.add_argument('--epochs', type=int, default=c.epochs, help=' ')
@@ -85,7 +85,7 @@ def setup_data(args, augmentation=False):
     if augmentation:
         transformations.extend([
             transforms.RandomHorizontalFlip(),
-            transforms.RandomAffine(15), ])
+            ])
 
     transformations.extend([
         transforms.Resize(args.image_size),
