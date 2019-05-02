@@ -27,7 +27,7 @@ def main(args):
                           image_size=args.image_size,
                           h_dim1=1024,
                           h_dim2=128,
-                          zdim=args.z_dim).to(c.device)
+                          zdim=zdim).to(c.device)
 
             optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
 
@@ -51,7 +51,7 @@ def main(args):
                                    'logvar': logvar,
                                    'batch_size': args.batch_size,
                                    'input_size': args.image_size,
-                                   'zdim': args.z_dim,
+                                   'zdim': zdim,
                                    'beta': args.beta}
 
                     loss, r, k = args.loss_function(**loss_params)
@@ -92,7 +92,7 @@ def main(args):
                                        'logvar': logvar,
                                        'batch_size': args.batch_size,
                                        'input_size': args.image_size,
-                                       'zdim': args.z_dim,
+                                       'zdim': zdim,
                                        'beta': args.beta}
                         loss, r, k = args.loss_function(**loss_params)
                         n = min(data.size(0), 8)
