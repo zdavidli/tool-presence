@@ -17,10 +17,11 @@ def main(args):
     datasets, dataloaders = utils.setup_data(args)
     args.z_dim = [int(x) for x in args.z_dim.split(',')]
     args.betas = [float(x) for x in args.betas.split(',')]
+
     for zdim in tqdm(args.z_dim):
         for beta in tqdm(args.betas):
-            output_name = '{}_beta_{}_epoch_{{}}.{{}}'.format(
-                args.output_name, beta)
+            output_name = '{}_beta_{}_zdim_{}_epoch_{{}}.{{}}'.format(
+                args.output_name, beta, zdim)
             losses = {'kl': [], 'rl': []}
             model = m.VAE(image_channels=args.image_channels,
                           image_size=args.image_size,
@@ -117,6 +118,9 @@ def main(args):
                                             output_name.format(
                                                 epoch+1,
                                                 'torch')))
+
+            with open(output_name.format(epoch, pkl), 'wb') as fp:
+                pickle.dump(losses, fp)
 
 
 # set up argparse

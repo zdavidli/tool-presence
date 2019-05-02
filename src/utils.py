@@ -54,7 +54,7 @@ def setup_argparse():
     parser.add_argument('--image-size', type=int,
                         default=c.image_size, help=' ')
     parser.add_argument('--batch-size', type=int, default=32, help=' ')
-    parser.add_argument('--z-dim', type=str, default=64, help=' ')
+    parser.add_argument('--z-dim', type=str, default='64', help=' ')
     parser.add_argument('--learning-rate', type=float,
                         default=1e-3, help=' ')
     parser.add_argument('--epochs', type=int, default=c.epochs, help=' ')
@@ -68,6 +68,8 @@ def setup_argparse():
                         default='vae', help='Loss function choice')
     parser.add_argument('-v', '--verbose', help="increase output verbosity",
                         action="store_true")
+    parser.add_argument('-a', '--augmentation', help="data augmentation",
+                        action="store_true")
     return parser
 
 
@@ -80,9 +82,9 @@ def select_loss_function(choice):
         raise ValueError("Unrecognized loss function")
 
 
-def setup_data(args, augmentation=False):
+def setup_data(args):
     transformations = []
-    if augmentation:
+    if args.augmentation:
         transformations.extend([
             transforms.RandomHorizontalFlip(),
             ])
