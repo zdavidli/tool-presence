@@ -123,7 +123,9 @@ def main(args):
                                                 epoch+1,
                                                 'torch')))
 
-            with open(output_name.format(epoch, 'pkl'), 'wb') as fp:
+            with open(os.path.join(args.output_dir,
+                                   output_name.format(epoch, 'pkl')),
+                      'wb') as fp:
                 pickle.dump(losses, fp)
 
 
