@@ -22,9 +22,10 @@ def main(args):
 
     model.load_state_dict(torch.load(os.path.join(args.root, args.path)))
 
-    output_string = output_header + "{}.csv"
+    output_string = args.output_header + "{}.csv"
     print(output_string)
-    train, test = utils.get_encodings(datasets, model, args)
+    train, test = utils.get_encodings(
+        datasets, model, args, output_string, save=False)
 
 
 if __name__ == '__main__':
@@ -38,8 +39,8 @@ if __name__ == '__main__':
     parser.add_argument('--data-dir', type=str,
                         default=os.path.join(c.data_home, 'youtube_data'),
                         help=' ')
-    parser.add_argument('--output-dir', type=str,
-                        default=os.path.abspath('.'),
+    parser.add_argument('--output-header', type=str,
+                        default=os.path.abspath('inference/encodings'),
                         help=' ')
     parser.add_argument('--path', type=str, default='',
                         help='Location of weights file')

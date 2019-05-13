@@ -143,7 +143,7 @@ def compute_samples(data, model, num_samples):
     return z_samples, pz, qz
 
 
-def get_encodings(datasets, model, args, output_string):
+def get_encodings(datasets, model, args, output_string, save=True):
     """
     Generate Latent space encodings from dataset
     """
@@ -170,10 +170,11 @@ def get_encodings(datasets, model, args, output_string):
     if args.verbose:
         print(train.head(5))
 
-    print("Saving to", os.path.join(
-        args.root, output_string))
-    train.to_csv(os.path.join(args.root, output_string.format("train")))
-    test.to_csv(os.path.join(args.root, output_string.format("test")))
+    if save:
+        print("Saving to", os.path.join(
+            args.root, output_string))
+        train.to_csv(os.path.join(args.root, output_string.format("train")))
+        test.to_csv(os.path.join(args.root, output_string.format("test")))
 
     return train, test
 
