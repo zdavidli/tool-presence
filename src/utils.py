@@ -1,4 +1,6 @@
 import argparse
+import numpy as np
+import pandas as pd
 import os
 from collections import OrderedDict
 
@@ -10,6 +12,8 @@ from scipy.special import logsumexp
 from scipy.stats import norm
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 from torchvision import datasets, transforms
+
+from tqdm import tqdm, trange
 
 
 def torch_to_numpy(tensor):
@@ -143,7 +147,7 @@ def compute_samples(data, model, num_samples):
     return z_samples, pz, qz
 
 
-def get_encodings(datasets, model, args, output_string, save=True):
+def get_encodings(datasets, model, args, save=True):
     """
     Generate Latent space encodings from dataset
     """
@@ -172,11 +176,11 @@ def get_encodings(datasets, model, args, output_string, save=True):
 
     if save:
         print("Saving to", os.path.join(
-            args.root, output_string))
+            args.root, args.output_dir, args.output_header))
         train.to_csv(os.path.join(args.root, args.output_dir,
                                   args.output_header + "_train.csv"))
         test.to_csv(os.path.join(args.root, args.output_dir,
-                                 args.output_string + "_test.csv"))
+                                 args.output_header + "_test.csv"))
 
     return train, test
 
