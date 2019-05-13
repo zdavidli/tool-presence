@@ -173,8 +173,10 @@ def get_encodings(datasets, model, args, output_string, save=True):
     if save:
         print("Saving to", os.path.join(
             args.root, output_string))
-        train.to_csv(os.path.join(args.root, output_string.format("train")))
-        test.to_csv(os.path.join(args.root, output_string.format("test")))
+        train.to_csv(os.path.join(args.root, args.output_dir,
+                                  args.output_header + "_train.csv"))
+        test.to_csv(os.path.join(args.root, args.output_dir,
+                                 args.output_string + "_test.csv"))
 
     return train, test
 
