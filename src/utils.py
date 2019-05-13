@@ -1,14 +1,14 @@
-from scipy.special import logsumexp
-from scipy.stats import norm
 import argparse
-import numpy as np
 import os
 from collections import OrderedDict
 
-
+import numpy as np
 import src.constants as c
 import src.model as m
 import torch
+from scipy.special import logsumexp
+from scipy.stats import norm
+from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 from torchvision import datasets, transforms
 
 
@@ -179,6 +179,26 @@ def get_encodings(datasets, model, args, output_string, save=True):
                                  args.output_string + "_test.csv"))
 
     return train, test
+
+
+def get_inference_results(result, test_labels):
+    predictions = np.zeros((len(test_labels), ))
+    for i, row in enumerate(test_labels.itertuples()):
+        logpz = np.log(result['theta'][-1])  # mixing probabilities
+        logpy_z0 = norm.logpdf(row[:10],
+                               loc=result['mu'][-1][0],
+                               scale=result['sigma'][-1][0])
+        logpy_z1 = norm.logpdf(row[:10],
+                               loc=result['mu'][-1][1],
+                               scale=result['sigma'][-1][1])
+        posterior0 = logpz[:, 0] + logpy_z0
+        posterior1 = logpz[:, 1] + logpy_z1
+        predictions[i] = int(logsumexp(posterior0) > logsumexp(posterior1))
+
+    confusion = confusion_matrix(test_labels['Tool'].values, predictions)
+    accuracy = accuracy_score(test_labels['Tool'].values, predictions)
+    f1 = f1_score(test_labels['Tool'].values, predictions)
+    return confusion, accuracy, f1
 
 
 def pystan_vb_extract(results):
