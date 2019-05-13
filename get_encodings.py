@@ -22,8 +22,7 @@ def main(args):
 
     model.load_state_dict(torch.load(os.path.join(args.root, args.path)))
 
-    output_string = args.output_header + "{}.csv"
-    print(output_string)
+    output_string = args.output_header + "_{}.csv"
     train, test = utils.get_encodings(
         datasets, model, args, output_string, save=False)
 
