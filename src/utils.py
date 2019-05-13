@@ -87,7 +87,7 @@ def setup_data(args):
     if args.augmentation:
         transformations.extend([
             transforms.RandomHorizontalFlip(),
-            ])
+        ])
 
     transformations.extend([
         transforms.Resize(args.image_size),
@@ -139,6 +139,52 @@ def compute_samples(data, model, num_samples):
     qz = np.swapaxes(qz, 1, 2)
 
     return z_samples, pz, qz
+
+
+def get_encodings(args):
+    """
+    Generate Latent space encodings from dataset
+    """
+    pass
+
+
+def pystan_vb_extract(results):
+    """
+    VB extract function
+    """
+    from collections import OrderedDict
+    param_specs = results['sampler_param_names']
+    samples = results['sampler_params']
+    n = len(samples[0])
+
+    # first pass, calculate the shape
+    param_shapes = OrderedDict()
+    for param_spec in param_specs:
+        splt = param_spec.split('[')
+        name = splt[0]
+        if len(splt) > 1:
+            # no +1 for shape calculation because pystan already returns 1-based indexes for vb!
+            idxs = [int(i) for i in splt[1][:-1].split(',')]
+        else:
+            idxs = ()
+        param_shapes[name] = np.maximum(idxs, param_shapes.get(name, idxs))
+
+    # create arrays
+    params = OrderedDict([(name, np.nan * np.empty((n, ) + tuple(shape)))
+                          for name, shape in param_shapes.items()])
+
+    # second pass, set arrays
+    for param_spec, param_samples in zip(param_specs, samples):
+        splt = param_spec.split('[')
+        name = splt[0]
+        if len(splt) > 1:
+            # -1 because pystan returns 1-based indexes for vb!
+            idxs = [int(i) - 1 for i in splt[1][:-1].split(',')]
+        else:
+            idxs = ()
+        params[name][(..., ) + tuple(idxs)] = param_samples
+
+    return params
 
 
 def estimate_logpx(dataloader, model, args, num_samples):
