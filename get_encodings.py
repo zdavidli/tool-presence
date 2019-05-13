@@ -23,7 +23,7 @@ def main(args):
     model.load_state_dict(torch.load(os.path.join(args.root, args.path)))
 
     train, test = utils.get_encodings(
-        datasets, model, args, save=False)
+        datasets, model, args)
 
 
 if __name__ == '__main__':
