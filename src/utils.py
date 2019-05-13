@@ -3,6 +3,8 @@ from scipy.stats import norm
 import argparse
 import numpy as np
 import os
+from collections import OrderedDict
+
 
 import src.constants as c
 import src.model as m
@@ -141,18 +143,45 @@ def compute_samples(data, model, num_samples):
     return z_samples, pz, qz
 
 
-def get_encodings(args):
+def get_encodings(datasets, model, args, output_string):
     """
     Generate Latent space encodings from dataset
     """
-    pass
+    train_encoding = []
+    test_encoding = []
+    with torch.no_grad():
+        for index in trange(len(datasets['train'])):
+            data = datasets['train'][index][0].view(
+                -1, args.image_channels, args.image_size, args.image_size).to(c.device)
+            latent_vector = torch_to_numpy(
+                model.sampling(*model.encode(data)))
+            train_encoding.extend(
+                [ar[0] for ar in np.split(latent_vector, data.shape[0])])
+
+        for index in trange(len(datasets['val'])):
+            data = datasets['val'][index][0].view(
+                -1, args.image_channels, args.image_size, args.image_size).to(c.device)
+            latent_vector = torch_to_numpy(
+                model.sampling(*model.encode(data)))
+            test_encoding.extend(
+                [ar[0] for ar in np.split(latent_vector, data.shape[0])])
+    train = pd.DataFrame(train_encoding)
+    test = pd.DataFrame(test_encoding)
+    if args.verbose:
+        print(train.head(5))
+
+    print("Saving to", os.path.join(
+        args.root, output_string))
+    train.to_csv(os.path.join(args.root, output_string.format("train")))
+    test.to_csv(os.path.join(args.root, output_string.format("test")))
+
+    return train, test
 
 
 def pystan_vb_extract(results):
     """
     VB extract function
     """
-    from collections import OrderedDict
     param_specs = results['sampler_param_names']
     samples = results['sampler_params']
     n = len(samples[0])
