@@ -2,6 +2,7 @@ from scipy.special import logsumexp
 from scipy.stats import norm
 import argparse
 import numpy as np
+import pandas as pd
 import os
 from collections import OrderedDict
 
@@ -11,6 +12,7 @@ import src.model as m
 import torch
 from torchvision import datasets, transforms
 
+from tqdm import tqdm, trange
 
 def torch_to_numpy(tensor):
     """
@@ -143,7 +145,7 @@ def compute_samples(data, model, num_samples):
     return z_samples, pz, qz
 
 
-def get_encodings(datasets, model, args, output_string, save=True):
+def get_encodings(datasets, model, args, save=True):
     """
     Generate Latent space encodings from dataset
     """
