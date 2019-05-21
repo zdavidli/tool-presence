@@ -111,9 +111,10 @@ def mmd_loss(**kwargs):
     true_samples = Variable(torch.randn(
         200, kwargs['zdim']), requires_grad=False).to(c.device)
     mmd = compute_mmd(true_samples, kwargs['z'])
-    nll = (kwargs['recon'] - kwargs['x']).pow(2).mean()
-    loss = nll + mmd * kwargs['beta']
-    return loss, mmd, nll
+    rl = F.mse_loss(kwargs['recon'], kwargs['x'], reduction='mean')
+#     nll = (kwargs['recon'] - kwargs['x']).pow(2).mean()
+    loss = rl + mmd * kwargs['beta']
+    return loss, rl, mmd
 
 
 def vae_loss(**kwargs):
@@ -121,9 +122,8 @@ def vae_loss(**kwargs):
     Standard ELBO loss with beta=1
     With beta != 1, loss function of beta-VAE
     """
-    RL = F.binary_cross_entropy(
-        kwargs['recon'], kwargs['x'], reduction='sum')/kwargs['input_size']
-    KLD = -0.5 * torch.sum(1 + kwargs['logvar'] - kwargs['mu'].pow(2) -
-                           kwargs['logvar'].exp())/kwargs['zdim']
+    RL = F.mse_loss(kwargs['recon'], kwargs['x'], reduction='mean')
+    KLD = -0.5 * torch.mean(1 + kwargs['logvar'] - kwargs['mu'].pow(2) -
+                           kwargs['logvar'].exp())
     loss = RL + KLD * kwargs['beta']
     return loss, RL, KLD
