@@ -189,10 +189,10 @@ def get_inference_results(result, test_labels):
     predictions = np.zeros((len(test_labels), ))
     for i, row in enumerate(test_labels.itertuples()):
         logpz = np.log(result['theta'][-1])  # mixing probabilities
-        logpy_z0 = norm.logpdf(row[:10],
+        logpy_z0 = norm.logpdf(row[:len(test_labels.columns)-2],
                                loc=result['mu'][-1][0],
                                scale=result['sigma'][-1][0])
-        logpy_z1 = norm.logpdf(row[:10],
+        logpy_z1 = norm.logpdf(row[:len(test_labels.columns)-2],
                                loc=result['mu'][-1][1],
                                scale=result['sigma'][-1][1])
         posterior0 = logpz[:, 0] + logpy_z0

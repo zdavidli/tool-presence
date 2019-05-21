@@ -13,9 +13,9 @@ from src import model as m
 
 def main(args):
     train = pd.read_csv(os.path.join(
-        args.root, args.data_dir, args.data_name + '_train.csv'))
+        args.root, args.data_dir, args.data_name + '_train.csv'), index_col=0)
     test = pd.read_csv(os.path.join(
-        args.root, args.data_dir, args.data_name + '_tests.csv'))
+        args.root, args.data_dir, args.data_name + '_test.csv'), index_col=0)
     print("Loaded data")
 
     if args.recompile:
@@ -25,7 +25,7 @@ def main(args):
     sampled_fit = os.path.join(args.root, args.fit_save_path)
 
     # Read data into pandas dataframe
-    test_labels = pd.read_csv(os.path.join(args.root, args.test_labels_file),
+    test_labels = pd.read_csv(os.path.join(args.root, args.test_labels),
                               index_col=0)
     test_labels = pd.concat([test, test_labels], axis=1).dropna()
 
@@ -33,7 +33,7 @@ def main(args):
     data = {"N": len(train.index),
             "N2": len(test_labels),
             "x": train,
-            "x_test": test_labels.values[:, :10],
+            "x_test": test,
             "K": 2,
             "D": len(train.columns)}
 
@@ -71,6 +71,7 @@ if __name__ == '__main__':
     parser.add_argument('--test-labels', type=str, default='')
     parser.add_argument('--stan-model', type=str,
                         default='', help='Stan code')
+    parser.add_argument('--zdim', type=int, default=10, help='dimension of data')
     parser.add_argument('--model-path', type=str, default='',
                         help='Where to read pickled model')
     parser.add_argument('--model-save-path', type=str, default='',
