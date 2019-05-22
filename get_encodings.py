@@ -20,7 +20,7 @@ def main(args):
                   h_dim2=128,
                   zdim=args.z_dim).to(c.device)
 
-    model.load_state_dict(torch.load(os.path.join(args.root, args.path)))
+    model.load_state_dict(torch.load(os.path.join(args.root, args.path), map_location='cpu'))
 
     train, test = utils.get_encodings(
         datasets, model, args)
