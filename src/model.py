@@ -71,7 +71,8 @@ class VAE(nn.Module):
                    self.image_size//2, self.image_size//2)
         z = F.interpolate(z, scale_factor=2)
         z = F.relu(self.conv3(z))
-        z = torch.sigmoid(self.conv4(z))
+        z = self.conv4(z)
+        #z = torch.sigmoid(self.conv4(z))
         return z
 
     def forward(self, x):
