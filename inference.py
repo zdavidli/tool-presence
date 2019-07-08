@@ -22,8 +22,11 @@ def main(args):
         compiled_model = os.path.join(args.root, args.model_save_path)
     else:
         compiled_model = os.path.join(args.root, args.model_path)
+
     sampled_fit = os.path.join(args.root, args.fit_save_path)
 
+    # print(compiled_model, sampled_fit)
+    print(args.test_labels)
     # Read data into pandas dataframe
     test_labels = pd.read_csv(os.path.join(args.root, args.test_labels),
                               index_col=0)
@@ -56,6 +59,15 @@ def main(args):
     with open(sampled_fit, 'wb') as f:
         pickle.dump(fit, f)
 
+    if args.vb:
+        result = utils.pystan_vb_extract(fit)
+    else:
+        result = fit.extract()
+
+    c, a, f = utils.get_inference_results(result, test_labels)
+
+    print(c, a, f)
+
 
 if __name__ == '__main__':
     # set up argparse
@@ -68,10 +80,12 @@ if __name__ == '__main__':
     parser.add_argument('--data-dir', type=str,
                         default=os.path.join(os.path.abspath('.'), 'inference'), help='')
     parser.add_argument('--data-name', type=str, default='', help='')
-    parser.add_argument('--test-labels', type=str, default='')
+    parser.add_argument('--test-labels', type=str,
+                        default='data/youtube_data/val/labels.csv')
     parser.add_argument('--stan-model', type=str,
                         default='', help='Stan code')
-    parser.add_argument('--zdim', type=int, default=10, help='dimension of data')
+    parser.add_argument('--zdim', type=int, default=10,
+                        help='dimension of data')
     parser.add_argument('--model-path', type=str, default='',
                         help='Where to read pickled model')
     parser.add_argument('--model-save-path', type=str, default='',
