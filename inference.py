@@ -64,9 +64,6 @@ def main(args):
     else:
         result = fit.extract()
 
-    c, a, f = utils.get_inference_results(result, test_labels)
-
-    print(c, a, f)
 
 
 if __name__ == '__main__':
@@ -93,7 +90,7 @@ if __name__ == '__main__':
     parser.add_argument('--fit-save-path', type=str, default='',
                         help='Where to save pickled fit')
     parser.add_argument(
-        '--vb', help='Where to save pickled fit', action='store_true')
+        '--vb', help='Toggle Variational Bayes or NUTS', action='store_true')
     parser.add_argument('-v', '--verbose', help="increase output verbosity",
                         action="store_true")
     parser.add_argument('--refit', action='store_true')
