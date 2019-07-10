@@ -10,7 +10,6 @@ import src.model as m
 import torch
 from scipy.special import logsumexp
 from scipy.stats import norm
-from sklearn.metrics import accuracy_score, confusion_matrix, f1_score
 from torchvision import datasets, transforms
 
 from tqdm import tqdm, trange
@@ -185,7 +184,7 @@ def get_encodings(datasets, model, args, save=True):
     return train, test
 
 
-def get_inference_results(result, test_labels):
+def get_inference_results(result, test_labels, metric, **kwargs):
     predictions = np.zeros((len(test_labels), ))
     for i, row in enumerate(test_labels.itertuples()):
         logpz = np.log(result['theta'][-1])  # mixing probabilities
@@ -199,10 +198,10 @@ def get_inference_results(result, test_labels):
         posterior1 = logpz[:, 1] + logpy_z1
         predictions[i] = int(logsumexp(posterior0) > logsumexp(posterior1))
 
-    confusion = confusion_matrix(test_labels['Tool'].values, predictions)
-    accuracy = accuracy_score(test_labels['Tool'].values, predictions)
-    f1 = f1_score(test_labels['Tool'].values, predictions)
-    return confusion, accuracy, f1
+    return metric(test_labels['Tool'].values, predictions, **kwargs)
+#     accuracy = accuracy_score(test_labels['Tool'].values, predictions)
+#     f1 = f1_score(test_labels['Tool'].values, predictions)
+#     return confusion, accuracy, f1
 
 
 def pystan_vb_extract(results):

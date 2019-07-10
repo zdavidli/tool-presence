@@ -65,7 +65,6 @@ def main(args):
         result = fit.extract()
 
 
-
 if __name__ == '__main__':
     # set up argparse
     parser = argparse.ArgumentParser(
