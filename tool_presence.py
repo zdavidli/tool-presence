@@ -28,6 +28,7 @@ def main(args):
                           h_dim1=1024,
                           h_dim2=128,
                           zdim=zdim).to(c.device)
+            import pdb; pdb.set_trace()
 
             if args.verbose:
                 tqdm.write(output_name)
@@ -124,7 +125,7 @@ def main(args):
                                                 'torch')))
 
             with open(os.path.join(args.output_dir,
-                                   output_name.format(epoch, 'pkl')),
+                                   output_name.format(epoch+1, 'pkl')),
                       'wb') as fp:
                 pickle.dump(losses, fp)
 

@@ -184,7 +184,7 @@ def get_encodings(datasets, model, args, save=True):
     return train, test
 
 
-def get_inference_results(result, test_labels, metric, **kwargs):
+def get_inference_results(result, test_labels, thresh=0.5, metric=None, **kwargs):
     predictions = np.zeros((len(test_labels), ))
     for i, row in enumerate(test_labels.itertuples()):
         logpz = np.log(result['theta'][-1])  # mixing probabilities
@@ -196,12 +196,9 @@ def get_inference_results(result, test_labels, metric, **kwargs):
                                scale=result['sigma'][-1][1])
         posterior0 = logpz[:, 0] + logpy_z0
         posterior1 = logpz[:, 1] + logpy_z1
-        predictions[i] = int(logsumexp(posterior0) > logsumexp(posterior1))
+        predictions[i] = int(logsumexp(posterior0) > thresh)
 
     return metric(test_labels['Tool'].values, predictions, **kwargs)
-#     accuracy = accuracy_score(test_labels['Tool'].values, predictions)
-#     f1 = f1_score(test_labels['Tool'].values, predictions)
-#     return confusion, accuracy, f1
 
 
 def pystan_vb_extract(results):

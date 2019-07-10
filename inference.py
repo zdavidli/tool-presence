@@ -41,7 +41,7 @@ def main(args):
             "D": len(train.columns)}
 
     # stan parameters
-    iters = 1000
+    iters = 5000
 
     if args.recompile:
         sm = pystan.StanModel(file=os.path.join(args.root, args.stan_model))
@@ -54,7 +54,7 @@ def main(args):
     if args.vb:
         fit = sm.vb(data=data, algorithm='meanfield')
     else:
-        fit = sm.sampling(data=data, warmup=500, iter=iters, chains=2, thin=1)
+        fit = sm.sampling(data=data, iter=iters, chains=4, thin=1)
 
     with open(sampled_fit, 'wb') as f:
         pickle.dump(fit, f)
